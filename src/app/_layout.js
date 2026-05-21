@@ -1,15 +1,21 @@
 import { Stack } from "expo-router";
-export default function RootLayout(){
-    return (<Stack
+
+export default function RootLayout() {
+    return (
+    <Stack
         screenOptions={{
-            headerStyle:{backgroundColor:'#f1f5f4'},
-            headerTintColor: '#000000',
-            headerTitleStyle: { fontWeight: 'bold',
-                color:'#0000'
-            },
+        headerShown: false, // remove header
+        gestureEnabled: false // swipe bak feature
         }}
     >
-        <Stack.Screen name="index" options={{headerShown:false}}/>
-        <Stack.Screen name="login" options={{title:'Sign In'}}/>
-    </Stack>)
+      {/* Landing Page */}
+        <Stack.Screen name="index" />
+        
+      {/* Sign In Screen */}
+        <Stack.Screen name="login" />
+        
+      {/* Onboarding Screen  */}
+        <Stack.Screen name="onboarding" />
+    </Stack>
+    );
 }
