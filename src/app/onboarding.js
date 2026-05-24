@@ -8,8 +8,8 @@ export default function Onboarding() {
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
-  const [accountType, setAccountType] = useState(""); //the person is customer or tailor 
-  const [address, setAddress] = useState(""); // storing  address state
+  const [accountType, setAccountType] = useState(""); // tracks if the person is customer or tailor 
+  const [address, setAddress] = useState(""); // storing address state
   
   const [specialization, setSpecialization] = useState([]);
   const [genders, setGenders] = useState([]);
@@ -86,23 +86,24 @@ export default function Onboarding() {
               <View style={styles.formGroup}>
                 <Text style={styles.label}>How will you use StitchDash?</Text>
                 <View style={styles.pillContainer}>
+                  {/* Customer Selection */}
                   <Pressable 
-                    style={[styles.selectorPill, accountType === "customer" && styles.activeSelectorPill]}
-                    onPress={() => {
-                      setAccountType("customer");
-                      setAddress(""); // Reset address field on switch
-                    }}
+                    style={accountType === "customer" ? styles.activeSelectorPill : styles.selectorPill}
+                    onPress={() => setAccountType("customer")}
                   >
-                    <Text style={[styles.selectorPillText, accountType === "customer" && styles.activeSelectorPillText]}>Customer</Text>
+                    <Text style={accountType === "customer" ? styles.activeSelectorPillText : styles.selectorPillText}>
+                      Customer
+                    </Text>
                   </Pressable>
+
+                  {/* Tailor Selection */}
                   <Pressable 
-                    style={[styles.selectorPill, accountType === "tailor" && styles.activeSelectorPill]}
-                    onPress={() => {
-                      setAccountType("tailor");
-                      setAddress(""); // Reset address field on switch
-                    }}
+                    style={accountType === "tailor" ? styles.activeSelectorPill : styles.selectorPill}
+                    onPress={() => setAccountType("tailor")}
                   >
-                    <Text style={[styles.selectorPillText, accountType === "tailor" && styles.activeSelectorPillText]}>Tailor Shop</Text>
+                    <Text style={accountType === "tailor" ? styles.activeSelectorPillText : styles.selectorPillText}>
+                      Tailor Shop
+                    </Text>
                   </Pressable>
                 </View>
               </View>
@@ -146,10 +147,12 @@ export default function Onboarding() {
                         return (
                           <Pressable
                             key={item}
-                            style={[styles.chip, isSelected && styles.activeChip]}
+                            style={isSelected ? styles.activeChip : styles.chip}
                             onPress={() => toggleGenders(item)}
                           >
-                            <Text style={[styles.chipText, isSelected && styles.activeChipText]}>{item}</Text>
+                            <Text style={isSelected ? styles.activeChipText : styles.chipText}>
+                              {item}
+                            </Text>
                           </Pressable>
                         );
                       })}
@@ -165,10 +168,12 @@ export default function Onboarding() {
                         return (
                           <Pressable
                             key={item}
-                            style={[styles.chip, isSelected && styles.activeChip]}
+                            style={isSelected ? styles.activeChip : styles.chip}
                             onPress={() => toggleSpecialization(item)}
                           >
-                            <Text style={[styles.chipText, isSelected && styles.activeChipText]}>{item}</Text>
+                            <Text style={isSelected ? styles.activeChipText : styles.chipText}>
+                              {item}
+                            </Text>
                           </Pressable>
                         );
                       })}
