@@ -1,17 +1,18 @@
 import { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  KeyboardAvoidingView,
-  Pressable,
-  ActivityIndicator,
-  Dimensions,
-  Platform,
-  TouchableWithoutFeedback,
+import { 
+  Platform, 
+  View, 
+  Text, 
+  StyleSheet, 
+  TextInput, 
+  KeyboardAvoidingView, 
+  Pressable, 
+  ActivityIndicator, 
+  Dimensions, 
+  TouchableWithoutFeedback, 
   Keyboard,
-} from "react-native";
+  SafeAreaView // ⚡ Added for safe window backdrop painting
+} from "react-native"; 
 
 import { supabase } from "../lib/supabase";
 import { router } from "expo-router";
@@ -76,116 +77,120 @@ export default function Login() {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    // 1. Outermost Layer: Safe Area paints the baseline canvas background dark slate
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#0f172a" }}>
+      
+      {/* 2. Secondary Layer: Avoids keyboard collisions cleanly */}
       <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"} 
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
       >
-        <View style={styles.container}>
-          <View style={styles.card}>
-            {/* Header Branding */}
-            <View style={styles.headerContainer}>
-              <Text style={styles.brandTitle}>StitchDash</Text>
-
-              <Text style={styles.brandSubtitle}>
-                {step === 1
-                  ? "Welcome! Let's get your account verified."
-                  : "Check your inbox for a verification code."}
-              </Text>
-            </View>
-
-            {/* Error Banner */}
-            {errorMessage ? (
-              <View style={styles.errorBanner}>
-                <Text style={styles.errorText}>{errorMessage}</Text>
+        {/* 3. Inside Layer: Dismisses the keyboard cleanly when tapping blank space */}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.container}>
+            <View style={styles.card}>
+              
+              {/* Header Branding */}
+              <View style={styles.headerContainer}>
+                <Text style={styles.brandTitle}>StitchDash</Text>
+                <Text style={styles.brandSubtitle}>
+                  {step === 1
+                    ? "Welcome! Let's get your account verified."
+                    : "Check your inbox for a verification code."}
+                </Text>
               </View>
-            ) : null}
 
-            {step === 1 ? (
-              <View style={styles.formGroup}>
-                <Text style={styles.inputLabel}>Email Address</Text>
+              {/* Error Banner */}
+              {errorMessage ? (
+                <View style={styles.errorBanner}>
+                  <Text style={styles.errorText}>{errorMessage}</Text>
+                </View>
+              ) : null}
 
-                <TextInput
-                  style={styles.input}
-                  placeholder="name@example.com"
-                  placeholderTextColor="#94a3b8"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  value={email}
-                  onChangeText={setEmail}
-                  editable={!loading}
-                />
+              {step === 1 ? (
+                <View style={styles.formGroup}>
+                  <Text style={styles.inputLabel}>Email Address</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="name@example.com"
+                    placeholderTextColor="#94a3b8"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    value={email}
+                    onChangeText={setEmail}
+                    editable={!loading}
+                  />
 
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.primaryButton,
-                    pressed && styles.buttonPressed,
-                    loading && styles.buttonDisabled,
-                  ]}
-                  onPress={handleSendOtp}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <ActivityIndicator color="#ffffff" size="small" />
-                  ) : (
-                    <Text style={styles.buttonText}>Send Code</Text>
-                  )}
-                </Pressable>
-              </View>
-            ) : (
-              <View style={styles.formGroup}>
-                <Text style={styles.inputLabel}>Verification Code</Text>
+                  <Pressable
+                    style={({ pressed }) => [
+                      styles.primaryButton,
+                      pressed && styles.buttonPressed,
+                      loading && styles.buttonDisabled,
+                    ]}
+                    onPress={handleSendOtp}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <ActivityIndicator color="#ffffff" size="small" />
+                    ) : (
+                      <Text style={styles.buttonText}>Send Code</Text>
+                    )}
+                  </Pressable>
+                </View>
+              ) : (
+                <View style={styles.formGroup}>
+                  <Text style={styles.inputLabel}>Verification Code</Text>
+                  <TextInput
+                    style={[styles.input, styles.otpInput]}
+                    placeholder="0 0 0 0 0 0"
+                    placeholderTextColor="#94a3b8"
+                    keyboardType="number-pad"
+                    maxLength={6}
+                    value={otp}
+                    onChangeText={setOtp}
+                    editable={!loading}
+                  />
 
-                <TextInput
-                  style={[styles.input, styles.otpInput]}
-                  placeholder="0 0 0 0 0 0"
-                  placeholderTextColor="#94a3b8"
-                  keyboardType="number-pad"
-                  maxLength={6}
-                  value={otp}
-                  onChangeText={setOtp}
-                  editable={!loading}
-                />
+                  <Pressable
+                    style={({ pressed }) => [
+                      styles.primaryButton,
+                      pressed && styles.buttonPressed,
+                      loading && styles.buttonDisabled,
+                    ]}
+                    onPress={handleVerifyOtp}
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <ActivityIndicator color="#ffffff" size="small" />
+                    ) : (
+                      <Text style={styles.buttonText}>Verify & Continue</Text>
+                    )}
+                  </Pressable>
 
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.primaryButton,
-                    pressed && styles.buttonPressed,
-                    loading && styles.buttonDisabled,
-                  ]}
-                  onPress={handleVerifyOtp}
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <ActivityIndicator color="#ffffff" size="small" />
-                  ) : (
-                    <Text style={styles.buttonText}>
-                      Verify & Continue
+                  <Pressable
+                    style={styles.secondaryButton}
+                    onPress={() => {
+                      if (!loading) {
+                        setStep(1);
+                        setOtp("");
+                        setErrorMessage("");
+                      }
+                    }}
+                  >
+                    <Text style={styles.secondaryButtonText}>
+                      Change email address
                     </Text>
-                  )}
-                </Pressable>
+                  </Pressable>
+                </View>
+              )}
 
-                <Pressable
-                  style={styles.secondaryButton}
-                  onPress={() => {
-                    if (!loading) {
-                      setStep(1);
-                      setOtp("");
-                      setErrorMessage("");
-                    }
-                  }}
-                >
-                  <Text style={styles.secondaryButtonText}>
-                    Change email address
-                  </Text>
-                </Pressable>
-              </View>
-            )}
+            </View>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+    </SafeAreaView>
   );
 }
 
@@ -197,7 +202,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#0f172a",
     paddingHorizontal: 20,
   },
-
   card: {
     width: width * 0.88,
     maxWidth: 400,
@@ -210,12 +214,10 @@ const styles = StyleSheet.create({
     shadowRadius: 15,
     elevation: 8,
   },
-
   headerContainer: {
     marginBottom: 24,
     alignItems: "center",
   },
-
   brandTitle: {
     fontSize: 32,
     fontWeight: "800",
@@ -223,7 +225,6 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
     marginBottom: 6,
   },
-
   brandSubtitle: {
     fontSize: 14,
     color: "#94a3b8",
@@ -231,11 +232,9 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     paddingHorizontal: 10,
   },
-
   formGroup: {
     width: "100%",
   },
-
   inputLabel: {
     fontSize: 12,
     fontWeight: "600",
@@ -244,7 +243,6 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     marginBottom: 8,
   },
-
   input: {
     width: "100%",
     backgroundColor: "#0f172a",
@@ -257,14 +255,12 @@ const styles = StyleSheet.create({
     color: "#f8fafc",
     marginBottom: 16,
   },
-
   otpInput: {
     textAlign: "center",
     fontSize: 22,
     letterSpacing: 8,
     fontWeight: "700",
   },
-
   errorBanner: {
     backgroundColor: "#ef444415",
     borderWidth: 1,
@@ -273,14 +269,12 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 20,
   },
-
   errorText: {
     color: "#f87171",
     fontSize: 13,
     fontWeight: "500",
     textAlign: "center",
   },
-
   primaryButton: {
     backgroundColor: "#38bdf8",
     borderRadius: 12,
@@ -294,31 +288,26 @@ const styles = StyleSheet.create({
     elevation: 3,
     minHeight: 52,
   },
-
   buttonPressed: {
     opacity: 0.85,
     transform: [{ scale: 0.99 }],
   },
-
   buttonDisabled: {
     backgroundColor: "#475569",
     shadowOpacity: 0,
     elevation: 0,
   },
-
   buttonText: {
     color: "#0f172a",
     fontSize: 16,
     fontWeight: "700",
   },
-
   secondaryButton: {
     marginTop: 16,
     paddingVertical: 8,
     alignItems: "center",
     justifyContent: "center",
   },
-
   secondaryButtonText: {
     color: "#94a3b8",
     fontSize: 14,
