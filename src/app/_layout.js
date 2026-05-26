@@ -23,7 +23,7 @@ export default function RootLayout() {
         }
       } catch (error) {
         console.error("Routing engine crash:", error); 
-        router.replace("/onboarding");
+        router.replace("/index");
       }
     };
 
