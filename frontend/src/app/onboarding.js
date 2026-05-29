@@ -1,9 +1,41 @@
 import { useState } from "react";
 import { Pressable, Text, TextInput, View, StyleSheet } from "react-native";
-
+import { SafeAreaView } from "react-native-safe-area-context";
 import {getToken} from "../lib/tokenExtract"
+import { router } from "expo-router";
   
-
+const handleSubmit=async()=>{
+  setLoading(true)
+  console.log("Submitting:", {name,email,phoneNumber,address})
+  try {
+    const token=await getToken()
+    const response=await fetch("http://localhost:3000/api/onboarding",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":`Bearer ${token}`
+      },
+      body:JSON.stringify({
+        name,email,address,phoneNumber
+      })
+    })
+    const result=await response.json()
+    if(response.ok){
+      console.log("Profile updated successfully in the db",result)
+      router.replace("/(tabs)/dashboard")
+    }
+    else{
+      console.errror("server rejected the data:", result.error)
+      alert(result.error||"Failed to save data")
+    }
+  } catch (error) {
+    console.error("API failure", error)
+    alert("Unknown Network!")
+  }
+  finally{
+    setLoading(false)
+  }
+}
 
 export default function Onboarding(){
   const [name, setName] = useState("");
@@ -12,6 +44,7 @@ export default function Onboarding(){
   const [phoneNumber, setPhoneNumber] = useState("");
   const [loading, setLoading] = useState(false);
   return (
+    <SafeAreaView style={{ flex: 1 }}>
     <View style={styles.container}>
       <Text style={styles.title}>Tell us a little about yourself</Text>
       
@@ -65,6 +98,7 @@ export default function Onboarding(){
         )}
       </Pressable>
     </View>
+    </SafeAreaView>
   );
 }
 
