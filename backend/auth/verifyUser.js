@@ -1,4 +1,4 @@
-import {supabaseAdmin} from "../db/db"
+import {supabaseAdmin} from "../db/db.js"
 
 export const verifyUser=async(req,res,next)=>{
     try {
@@ -25,3 +25,5 @@ export const verifyUser=async(req,res,next)=>{
         })
     }
 }
+
+export default verifyUser

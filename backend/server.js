@@ -1,9 +1,11 @@
 import express from "express"
+import routes from "./routes/routes.js"
+import bodyParser from "body-parser"
+
 const app=express()
 
-app.get("/test",(req,res)=>{
-    res.send("working fine")
-})
-app.listen(8080,()=>{
-    console.log("Server ready to start")
+app.use(express.json())
+app.use("/api/v1",routes)
+app.listen(8080,"0.0.0.0",()=>{
+    console.log("Server ready to start 8080")
 })
